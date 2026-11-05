@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {buildUrl,geocode} from '../node/geocode.mjs';
+test('query encoding',()=>{const u=buildUrl('search',['Paris &key=bad'],'synthetic-secret');assert.equal(u.searchParams.get('q'),'Paris &key=bad');assert.deepEqual(u.searchParams.getAll('key'),['synthetic-secret']);});
+test('validation',()=>{assert.throws(()=>buildUrl('search',['Paris'],''));for(const v of [['91','0'],['nan','0'],['','0']])assert.throws(()=>buildUrl('reverse',v,'synthetic-secret'));});
+test('success',async()=>assert.deepEqual(await geocode('search',['Paris'],'synthetic-secret',async()=>({ok:true,json:async()=>[{lat:'48.85'}]})),[{lat:'48.85'}]));
+test('errors redact keys',async()=>{await assert.rejects(geocode('search',['Paris'],'synthetic-secret',async()=>({ok:false,status:429})),{message:'API returned HTTP 429. Check your key and limits.'});await assert.rejects(geocode('search',['Paris'],'synthetic-secret',async()=>{throw Error('synthetic-secret');}),{message:'Could not reach the API.'});});

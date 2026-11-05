@@ -1,0 +1,334 @@
+{
+  "info": {
+    "name": "Geocoding.info API",
+    "description": "# Geocoding.info API\n\nForward and reverse geocoding, OpenStreetMap object lookup, service status, and account usage.\n\n## Start here\n1. Create an account at https://geocoding.info/Signup.aspx and verify your email if required.\n2. Create an API key in your dashboard.\n3. Fork this collection into your own workspace and set `api_key` as a local secret. The shared value is intentionally empty; never publish a real key.\n4. Send Service status first, then try the geocoding examples. Send requests one at a time and respect your plan's rate limits.\n\nBase URL: https://api.geocoding.info\n\nPlans: https://geocoding.info/Pricing.aspx\nGuide: https://geocoding.info/Geocoding.aspx\nSupport: https://geocoding.info/Contact.aspx\n\nJSON and XML are supported for geocoding endpoints. English is the default unless `accept-language` is explicitly supplied. Search/lookup return lists; reverse geocoding returns an object. Results depend on OpenStreetMap coverage and are not postal-address validation. Keep API keys on your server and out of logs, repositories, screenshots and shared collection values.\n\nDaily and 30-day limits both apply. Refer to the live pricing page for current terms. The collection contains no private credentials and does not create accounts or purchase subscriptions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.geocoding.info",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (pm.info.requestName !== \"Service status\" && !pm.variables.get(\"api_key\")) {",
+          "  throw new Error(\"Fork this collection and set api_key locally. Never share a real key.\");",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Service status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/status",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "status"
+          ],
+          "query": []
+        },
+        "description": "Public health check; no API key required."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Search an address — JSON",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/search?q=Paris, France&format=json&accept-language=en&key={{api_key}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "search"
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "Paris, France"
+            },
+            {
+              "key": "format",
+              "value": "json"
+            },
+            {
+              "key": "accept-language",
+              "value": "en"
+            },
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Convert an address or place name into candidate coordinates."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Reverse geocode — JSON",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/reverse?lat=48.8584&lon=2.2945&format=json&accept-language=en&key={{api_key}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "reverse"
+          ],
+          "query": [
+            {
+              "key": "lat",
+              "value": "48.8584"
+            },
+            {
+              "key": "lon",
+              "value": "2.2945"
+            },
+            {
+              "key": "format",
+              "value": "json"
+            },
+            {
+              "key": "accept-language",
+              "value": "en"
+            },
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Find a suitable mapped place near supplied coordinates; an exact street address is not guaranteed."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Lookup an OSM object",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/lookup?osm_ids=R7444&format=json&key={{api_key}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "lookup"
+          ],
+          "query": [
+            {
+              "key": "osm_ids",
+              "value": "R7444"
+            },
+            {
+              "key": "format",
+              "value": "json"
+            },
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Lookup a sample OpenStreetMap relation ID. IDs and available records may change."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Account usage",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/usage?key={{api_key}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "usage"
+          ],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Read your account usage and allowances. This endpoint is read-only."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Search an address — XML",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/search?q=Paris, France&format=xml&accept-language=en&key={{api_key}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "search"
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "Paris, France"
+            },
+            {
+              "key": "format",
+              "value": "xml"
+            },
+            {
+              "key": "accept-language",
+              "value": "en"
+            },
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "The same address search with XML output."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Reverse geocode — XML",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/reverse?lat=48.8584&lon=2.2945&format=xml&key={{api_key}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "reverse"
+          ],
+          "query": [
+            {
+              "key": "lat",
+              "value": "48.8584"
+            },
+            {
+              "key": "lon",
+              "value": "2.2945"
+            },
+            {
+              "key": "format",
+              "value": "xml"
+            },
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Reverse geocoding with XML output."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    }
+  ]
+}
